@@ -1,4 +1,7 @@
 {
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "installCommand": "npm install",
   "crons": [
     {
       "path": "/api/run-scraper",
