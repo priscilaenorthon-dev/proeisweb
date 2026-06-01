@@ -1,7 +1,8 @@
 {
-  "functions": {
-    "api/vagas.js": {
-      "maxDuration": 60
+  "crons": [
+    {
+      "path": "/api/run-scraper",
+      "schedule": "0 11 * * 4"
     }
-  }
+  ]
 }
