@@ -67,7 +67,15 @@ async function logarNoPROEIS(page: Page, emit: Emitter): Promise<void> {
   emit('info', `Acessando https://www.proeis.rj.gov.br/Default.aspx ...`);
   await page.goto('https://www.proeis.rj.gov.br/Default.aspx', {
     waitUntil: 'domcontentloaded',
-    timeout: 30000,
+    timeout: 60000,
+  }).catch(async (err) => {
+    // Se timeout no domcontentloaded, tenta verificar se a página carregou mesmo assim
+    const url = page.url();
+    if (url.includes('proeis.rj.gov.br') && url !== 'about:blank') {
+      emit('warn', `Timeout parcial, mas página carregou: ${url}`);
+    } else {
+      throw err;
+    }
   });
   await delay(1500);
   emit('success', 'Página de login carregada');
@@ -85,7 +93,7 @@ async function logarNoPROEIS(page: Page, emit: Emitter): Promise<void> {
   }
 
   await delay(1500);
-  await page.waitForLoadState('networkidle', { timeout: 20000 });
+  await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
 
   // Preencher ID funcional
   emit('info', `Preenchendo ID funcional: ${PROEIS_ID}...`);
@@ -140,7 +148,7 @@ async function logarNoPROEIS(page: Page, emit: Emitter): Promise<void> {
     if ((await btnSubmit.count()) === 0) throw new Error('Botão de login não encontrado na página');
 
     await Promise.all([
-      page.waitForLoadState('networkidle', { timeout: 25000 }),
+      page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {}),
       btnSubmit.click(),
     ]);
     await delay(1500);
