@@ -17,16 +17,21 @@ interface DadosServicos {
   servicos: Servico[];
 }
 
-interface RespostaBot {
-  success: boolean;
-  totalInscritos?: number;
-  error?: string;
-}
-
 interface LogEntry {
   timestamp: string;
   level: 'info' | 'success' | 'error' | 'warn';
   message: string;
+}
+
+interface SseEvent {
+  timestamp?: string;
+  level?: LogEntry['level'];
+  message?: string;
+  type?: 'done';
+  success?: boolean;
+  totalInscritos?: number;
+  totalEncontrados?: number;
+  error?: string;
 }
 
 interface Toast {
@@ -85,19 +90,11 @@ export default function Dashboard() {
   const [mostrarLogs, setMostrarLogs] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
-  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const carregarDados = useCallback(async () => {
     try {
       const res = await fetch('/api/servicos');
       if (res.ok) setDados((await res.json()) as DadosServicos);
-    } catch { /* silencioso */ }
-  }, []);
-
-  const carregarLogs = useCallback(async () => {
-    try {
-      const res = await fetch('/api/logs');
-      if (res.ok) setLogs((await res.json()) as LogEntry[]);
     } catch { /* silencioso */ }
   }, []);
 
@@ -118,46 +115,54 @@ export default function Dashboard() {
     return () => clearTimeout(t);
   }, [toast]);
 
-  function iniciarPollingLogs() {
-    if (pollingRef.current) clearInterval(pollingRef.current);
-    pollingRef.current = setInterval(() => void carregarLogs(), 2000);
-  }
-
-  function pararPollingLogs() {
-    if (pollingRef.current) {
-      clearInterval(pollingRef.current);
-      pollingRef.current = null;
-    }
-  }
-
   async function executarBot() {
     setExecutando(true);
     setMostrarLogs(true);
     setLogs([]);
 
-    // Limpar logs anteriores
-    await fetch('/api/logs', { method: 'DELETE' }).catch(() => {});
-
-    // Iniciar polling de logs a cada 2s
-    iniciarPollingLogs();
-
     try {
       const res = await fetch('/api/run-scraper', { method: 'POST' });
-      const data = (await res.json()) as RespostaBot;
 
-      // Última leitura de logs após conclusão
-      await carregarLogs();
-      pararPollingLogs();
+      if (!res.body) {
+        throw new Error('Sem body na resposta');
+      }
 
-      if (data.success) {
-        setToast({ tipo: 'sucesso', mensagem: `✓ ${data.totalInscritos ?? 0} inscrições realizadas!` });
-        await carregarDados();
-      } else {
-        setToast({ tipo: 'erro', mensagem: `✗ Erro: ${data.error ?? 'desconhecido'}` });
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const linhas = buffer.split('\n');
+        buffer = linhas.pop() ?? '';
+
+        for (const linha of linhas) {
+          if (!linha.startsWith('data: ')) continue;
+          try {
+            const evento = JSON.parse(linha.slice(6)) as SseEvent;
+
+            if (evento.type === 'done') {
+              if (evento.success) {
+                setToast({ tipo: 'sucesso', mensagem: `✓ ${evento.totalInscritos ?? 0} inscrições realizadas!` });
+                await carregarDados();
+              } else {
+                setToast({ tipo: 'erro', mensagem: `✗ Erro: ${evento.error ?? 'desconhecido'}` });
+              }
+            } else if (evento.level && evento.message) {
+              const entry: LogEntry = {
+                timestamp: evento.timestamp ?? new Date().toISOString(),
+                level: evento.level,
+                message: evento.message,
+              };
+              setLogs((prev) => [...prev, entry]);
+            }
+          } catch { /* JSON inválido, ignorar */ }
+        }
       }
     } catch {
-      pararPollingLogs();
-      await carregarLogs();
       setToast({ tipo: 'erro', mensagem: '✗ Erro de conexão' });
     } finally {
       setExecutando(false);
