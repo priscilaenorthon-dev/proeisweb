@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/vagas.js": {
+      "maxDuration": 60
+    }
+  }
+}

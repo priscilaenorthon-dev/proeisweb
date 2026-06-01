@@ -6,20 +6,41 @@
     <title>Assistente PROEIS</title>
     <meta
       name="description"
-      content="Assistente para preencher a primeira etapa de login do PROEIS"
+      content="Automacao de login, busca e cadastro de vagas no PROEIS"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="page-shell">
-      <section class="panel">
+
+      <!-- Painel de automação principal -->
+      <section class="panel" id="automation-panel">
         <div class="header-block">
-          <p class="eyebrow">PROEIS</p>
-          <h1>Primeira etapa do login</h1>
+          <p class="eyebrow">PROEIS — Automacao</p>
+          <h1>Vagas disponíveis</h1>
           <p>
-            Preencha o ID funcional, abra o site oficial e use o botao de
-            preenchimento assistido. O CAPTCHA continua sendo resolvido
-            manualmente no proprio site.
+            Clique em <strong>Buscar vagas</strong> para ver o que está disponível.
+            Use <strong>Cadastrar em todas</strong> para se inscrever automaticamente
+            em todas as vagas abertas.
+          </p>
+        </div>
+
+        <div class="actions">
+          <button id="btn-buscar" class="button primary">Buscar vagas</button>
+          <button id="btn-cadastrar" class="button secondary">Cadastrar em todas</button>
+        </div>
+
+        <p id="status-msg" hidden></p>
+        <div id="vagas-list" hidden></div>
+      </section>
+
+      <!-- Painel auxiliar: bookmarklet (fallback manual) -->
+      <section class="panel panel-secundario">
+        <div class="header-block">
+          <p class="eyebrow">Alternativa manual</p>
+          <h2>Preencher login por bookmarklet</h2>
+          <p>
+            Se preferir fazer o login manualmente, use o assistente abaixo.
           </p>
         </div>
 
@@ -52,24 +73,21 @@
         </div>
 
         <div class="steps">
-          <h2>Como usar</h2>
+          <h2>Como usar o bookmarklet</h2>
           <ol>
-            <li>Digite seu ID funcional nesta tela.</li>
-            <li>
-              Arraste o botao "Preencher login" para a barra de favoritos.
-            </li>
+            <li>Digite seu ID funcional acima.</li>
+            <li>Arraste o botao "Preencher login" para a barra de favoritos.</li>
             <li>Abra o PROEIS pelo botao acima.</li>
-            <li>
-              Clique no favorito quando estiver na pagina oficial. Se a pagina
-              recarregar ao selecionar ID Funcional, clique no favorito de novo.
-            </li>
-            <li>Digite o CAPTCHA manualmente e avance.</li>
+            <li>Clique no favorito na pagina oficial. Se a pagina recarregar, clique de novo.</li>
+            <li>Digite o CAPTCHA e a senha manualmente.</li>
           </ol>
         </div>
       </section>
+
     </main>
 
     <script type="module" src="./src/proeis-login.js"></script>
     <script type="module" src="./src/app.js"></script>
+    <script type="module" src="./src/dashboard.js"></script>
   </body>
 </html>

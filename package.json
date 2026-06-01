@@ -1,11 +1,17 @@
 {
   "name": "proeisweb",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test"
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@sparticuz/chromium": "^133.0.0",
+    "playwright-core": "^1.50.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.50.0"
+  }
 }
