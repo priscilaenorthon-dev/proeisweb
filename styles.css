@@ -16,9 +16,11 @@ body {
 .page-shell {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 32px 16px;
+  gap: 24px;
 }
 
 .panel {
@@ -28,6 +30,11 @@ body {
   border-radius: 8px;
   padding: 32px;
   box-shadow: 0 12px 36px rgba(23, 32, 42, 0.08);
+}
+
+.panel-secundario {
+  box-shadow: none;
+  border-color: #e8ecf0;
 }
 
 .header-block {
@@ -98,9 +105,18 @@ p {
   align-items: center;
   justify-content: center;
   border-radius: 6px;
-  padding: 0 16px;
+  padding: 0 20px;
   font-weight: 700;
   text-decoration: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .primary {
