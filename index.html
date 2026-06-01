@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Assistente PROEIS</title>
+    <meta
+      name="description"
+      content="Assistente para preencher a primeira etapa de login do PROEIS"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="panel">
+        <div class="header-block">
+          <p class="eyebrow">PROEIS</p>
+          <h1>Primeira etapa do login</h1>
+          <p>
+            Preencha o ID funcional, abra o site oficial e use o botao de
+            preenchimento assistido. O CAPTCHA continua sendo resolvido
+            manualmente no proprio site.
+          </p>
+        </div>
+
+        <label class="field" for="functional-id">
+          <span>ID funcional</span>
+          <input
+            id="functional-id"
+            inputmode="numeric"
+            maxlength="12"
+            placeholder="Somente numeros"
+            autocomplete="off"
+          />
+        </label>
+
+        <p id="error-message" class="error-text" hidden></p>
+
+        <div class="actions">
+          <a
+            id="open-proeis"
+            class="button primary"
+            href="https://www.proeis.rj.gov.br/Default.aspx"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Abrir PROEIS
+          </a>
+          <a id="bookmarklet" class="button secondary disabled" href="#">
+            Preencher login
+          </a>
+        </div>
+
+        <div class="steps">
+          <h2>Como usar</h2>
+          <ol>
+            <li>Digite seu ID funcional nesta tela.</li>
+            <li>
+              Arraste o botao "Preencher login" para a barra de favoritos.
+            </li>
+            <li>Abra o PROEIS pelo botao acima.</li>
+            <li>
+              Clique no favorito quando estiver na pagina oficial. Se a pagina
+              recarregar ao selecionar ID Funcional, clique no favorito de novo.
+            </li>
+            <li>Digite o CAPTCHA manualmente e avance.</li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/proeis-login.js"></script>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
